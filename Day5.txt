@@ -1,0 +1,57 @@
+1.Nested Document 
+inset  - [ { "item": "Journal", "qty": 25, "size": { "h": 14, "w": 21, "unit": "in" }, "status": "A" }, { "item": "Notebook", "qty": 50, "size": { "h": 20, "w": 25, "unit": "cm" }, "status": "B" }, { "item": "Sketchbook", "qty": 30, "size": { "h": 25, "w": 30, "unit": "in" }, "status": "A" }, { "item": "Diary", "qty": 15, "size": { "h": 18, "w": 24, "unit": "cm" }, "status": "C" }, { "item": "Planner", "qty": 40, "size": { "h": 22, "w": 28, "unit": "cm" }, "status": "B" } ]
+
+* db.inventory.find({'size.h':{$gt:22}}) 
+* db.inventory.find({'size.unit':"cm"})
+*  db.inventory.find({'size.h':{$gt:20},status:'A'})
+  or db.inventory.find({'size.h':{$gt:20},'size.w':{$lt:50}}) two condition
+* collection drop -- db.inventory.drop()
+
+
+2.find from array 
+
+insert -- [ { "items": "Journal", "qty": 25, "tags": ["black", "red"], "dim_cm": [14.21] }, { "items": "Notebook", "qty": 50, "tags": ["blue", "yellow"], "dim_cm": [18, 25] }, { "items": "Sketchbook", "qty": 30, "tags": ["green", "orange"], "dim_cm": [25, 30] }, { "items": "Diary", "qty": 15, "tags": ["purple", "pink"], "dim_cm": [18, 24] }, { "items": "Planner", "qty": 40, "tags": ["red", "black"], "dim_cm": [22, 28] } ]
+
+* db.products.find({tags:["red","blue"]}) //first red and 2nd blue order data only retuning
+* db.products.find({tags:{$all:['red','blue']}}) //without following order 
+* single array value searching  // db.products.find({tags:"red"})
+* db.inventory.find({dim_cm:{$lt:20}}) array any one value lt
+* db.inventory.find({dim_cm:{$elemMatch:{$gt:17,$lt:25}}}) any one condition match 
+* db.inventory.find({tags:{$size:2}}) filed size array size
+
+3.array of documents
+ insert --- [ { "items": "Journal", "instock": [ { "warehouse": "A", "qty": 5 }, { "warehouse": "C", "qty": 15 } ] }, { "items": "Notebook", "instock": [ { "warehouse": "B", "qty": 10 }, { "warehouse": "D", "qty": 20 } ] }, { "items": "Sketchbook", "instock": [ { "warehouse": "A", "qty": 30 }, { "warehouse": "B", "qty": 25 } ] }, { "items": "Diary", "instock": [ { "warehouse": "C", "qty": 5 }, { "warehouse": "D", "qty": 10 } ] }, { "items": "Planner", "instock": [ { "warehouse": "A", "qty": 8 }, { "warehouse": "C", "qty": 12 } ] } ]
+
+*db.inventory.find({instock:{warehouse:"A",qty:5}}) // aquaride match order must
+*db.inventory.find({'instock.qty':{$gt:10}}) gt in
+* db.inventory.find({'instock.0.qty':{$gt:10}}) index throught checking arr inside 1st index
+* db.inventory.find({'instock':{$elemMatch:{qty:5,warehouse:"A"}}})  //multiple condition
+* db.inventory.find({'instock':{$elemMatch:{qty:{$gt:10,$lt:20}}}}) //multiple cond 
+ above simple way
+    *db.inventory.find({'instock.qty':{$gt:10,$lt:20}})
+
+
+4. update and on time inserting
+
+insert [ { "_id": 1, "test1": 95, "test2": 78, "test3": 100, "modified": new Date('01/05/2024') }, { "_id": 2, "test1": 88, "test2": 90, "test3": 85, "modified": new Date('02/15/2024') }, { "_id": 3, "test1": 92, "test2": 80, "modified": new Date('03/10/2024') } ]
+
+*db.students.updateOne({_id:3},{$set:{'test3':98,modified:new Date()}})
+-----------------------------------------------------------------------------------------
+
+1.Nested Document 
+inset  - [ { "item": "Journal", "qty": 25, "size": { "h": 14, "w": 21, "unit": "in" }, "status": "A" }, { "item": "Notebook", "qty": 50, "size": { "h": 20, "w": 25, "unit": "cm" }, "status": "B" }, { "item": "Sketchbook", "qty": 30, "size": { "h": 25, "w": 30, "unit": "in" }, "status": "A" }, { "item": "Diary", "qty": 15, "size": { "h": 18, "w": 24, "unit": "cm" }, "status": "C" }, { "item": "Planner", "qty": 40, "size": { "h": 22, "w": 28, "unit": "cm" }, "status": "B" } ]
+
+2.find from array 
+
+insert -- [ { "items": "Journal", "qty": 25, "tags": ["black", "red"], "dim_cm": [14.21] }, { "items": "Notebook", "qty": 50, "tags": ["blue", "yellow"], "dim_cm": [18, 25] }, { "items": "Sketchbook", "qty": 30, "tags": ["green", "orange"], "dim_cm": [25, 30] }, { "items": "Diary", "qty": 15, "tags": ["purple", "pink"], "dim_cm": [18, 24] }, { "items": "Planner", "qty": 40, "tags": ["red", "black"], "dim_cm": [22, 28] } ]
+
+3.array of documents
+ insert --- [ { "items": "Journal", "instock": [ { "warehouse": "A", "qty": 5 }, { "warehouse": "C", "qty": 15 } ] }, { "items": "Notebook", "instock": [ { "warehouse": "B", "qty": 10 }, { "warehouse": "D", "qty": 20 } ] }, { "items": "Sketchbook", "instock": [ { "warehouse": "A", "qty": 30 }, { "warehouse": "B", "qty": 25 } ] }, { "items": "Diary", "instock": [ { "warehouse": "C", "qty": 5 }, { "warehouse": "D", "qty": 10 } ] }, { "items": "Planner", "instock": [ { "warehouse": "A", "qty": 8 }, { "warehouse": "C", "qty": 12 } ] } ]
+
+4.insert [ { "_id": 1, "test1": 95, "test2": 78, "test3": 100, "modified": new Date('01/05/2024') }, { "_id": 2, "test1": 88, "test2": 90, "test3": 85, "modified": new Date('02/15/2024') }, { "_id": 3, "test1": 92, "test2": 80, "modified": new Date('03/10/2024') } ]
+
+
+
+
+
+ 
