@@ -1,0 +1,24 @@
+1. setting default values
+insert  
+db.students.insertMany([ {_id:1,quiz1:8,test2:100,quiz2:9,modified:new Date('2024/05/23')},{_id:2,quiz2:5,test1:90,test2:89,modified:new Date('2024/05/23')}])
+
+* db.students.updateMany( {}, [ { $replaceRoot: { newRoot: { $mergeObjects: [ { quiz1: 0, quiz2: 0, test1: 0, test2: 0 }, "$$ROOT"] } } }, { $set: { modified: new Date() } }] )
+
+2. average 
+insert [{_id:1,tests:[95,92,90],modified:new Date ()}, {_id:2,tests:[35,82,10],modified:new Date ()}, {_id:3,tests:[85,32,60],modified:new Date ()}]
+
+*db.students.updateMany({},[{$set:{average:{$trunc:[{$avg:"$tests"},0]},modified:new Date()}}])
+* db.students.updateMany({}, [ { $set: { grade: { $switch: { branches: [{ case: { $gte: ['$average', 90] }, then: 'A' }, { case: { $gte: ['$average', 80] }, then: 'B' }, { case: { $gte: ['$average', 70] }, then: 'C' }, { case: { $gte: ['$average', 69] }, then: 'D' }], default: 'F' } } } }])
+-------------------------- 1st and second-------------------------------
+* db.students.updateMany({}, [{ $set: { average: { $trunc: [{ $avg: "$tests" }, 0] }, modified: new Date() } }, { $set: { grade: { $switch: { branches: [ { case: { $gte: ['$average', 90] }, then: 'A' }, { case: { $gte: ['$average', 80] }, then: 'B' }, { case: { $gte: ['$average',
+ 70] }, then: 'C' }, { case: { $gte: ['$average', 69] }, then: 'D' }], default: 'F' } } } }] )
+
+3.concot
+insert db.students.insertMany([ { _id: 1, 'quizzes': [4, 6, 7] }, { _id: 2, 'quizzes': [5] }, { _id: 3, 'quizzes': [10, 5, 20] }] )
+
+*db.students.updateOne({ _id: 2 }, [{ $set: { quizzes: { $concatArrays: ['$quizzes', [8, 6]] } } }])
+
+4. add additional field with arithmetic
+insert  [ { "_id": 1, "date": ISODate("2024-05-20T00:00:00Z"), "tempC": [18, 6, 9] }, { "_id": 2, "date": ISODate("2024-05-21T00:00:00Z"), "tempC": [20, 7, 10] }, { "_id": 3, "date": ISODate("2024-05-22T00:00:00Z"), "tempC": [19, 8, 11] }, { "_id": 4, "date": ISODate("2024-05-23T00:00:00Z"), "tempC": [22, 10, 12] }, { "_id": 5, "date": ISODate("2024-05-24T00:00:00Z"), "tempC": [21, 9, 13] } ]
+
+*db.students.updateMany({}, [ { $addFields: { 'tempF': { $map: { input: "$tempC", as: "celsius", in: { $add: [{ $multiply: ['$$celsius', 9 / 5] }, 32] } } } } }] )
