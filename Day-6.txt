@@ -22,3 +22,16 @@ insert db.students.insertMany([ { _id: 1, 'quizzes': [4, 6, 7] }, { _id: 2, 'qui
 insert  [ { "_id": 1, "date": ISODate("2024-05-20T00:00:00Z"), "tempC": [18, 6, 9] }, { "_id": 2, "date": ISODate("2024-05-21T00:00:00Z"), "tempC": [20, 7, 10] }, { "_id": 3, "date": ISODate("2024-05-22T00:00:00Z"), "tempC": [19, 8, 11] }, { "_id": 4, "date": ISODate("2024-05-23T00:00:00Z"), "tempC": [22, 10, 12] }, { "_id": 5, "date": ISODate("2024-05-24T00:00:00Z"), "tempC": [21, 9, 13] } ]
 
 *db.students.updateMany({}, [ { $addFields: { 'tempF': { $map: { input: "$tempC", as: "celsius", in: { $add: [{ $multiply: ['$$celsius', 9 / 5] }, 32] } } } } }] )
+
+--------------------------------------------------------------------------------------------------------------------------------------
+
+1. [ { "_id": 1, "test1": 95, "test2": 78, "test3": 100, "modified": new Date('01/05/2024') }, { "_id": 2, "test1": 88, "test2": 90, "test3": 85, "modified": new Date('02/15/2024') }, { "_id": 3, "test1": 92, "test2": 80, "modified": new Date('03/10/2024') } ]
+
+2 [ {_id:1,quiz1:8,test2:100,quiz2:9,modified:new Date('2024/05/23')},{_id:2,quiz2:5,test1:90,test2:89,modified:new Date('2024/05/23')}]
+
+3. [{_id:1,tests:[95,92,90],modified:new Date ()}, {_id:2,tests:[35,82,10],modified:new Date ()}, {_id:3,tests:[85,32,60],modified:new Date ()}]
+
+4.[ { _id: 1, 'quizzes': [4, 6, 7] }, { _id: 2, 'quizzes': [5] }, { _id: 3, 'quizzes': [10, 5, 20] }]
+
+5.[ { "_id": 1, "date": ISODate("2024-05-20T00:00:00Z"), "tempC": [18, 6, 9] }, { "_id": 2, "date": ISODate("2024-05-21T00:00:00Z"), "tempC": [20, 7, 10] }, { "_id": 3, "date": ISODate("2024-05-22T00:00:00Z"), "tempC": [19, 8, 11] }, { "_id": 4, "date": ISODate("2024-05-23T00:00:00Z"), "tempC": [22, 10, 12] }, { "_id": 5, "date": ISODate("2024-05-24T00:00:00Z"), "tempC": [21, 9, 13] } ]
+
