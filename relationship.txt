@@ -1,0 +1,95 @@
+Relationships in MongoDB
+1.One-to-One Relationship
+2.One-to-Many Relationship
+3.Many-to-Many Relationship
+
+1.One-to-One Relationship
+ insert Query:
+--Embedding Example
+db.users.insertOne({
+    "_id": 1,
+    "username": "alice",
+    "email": "alice@example.com",
+    "profile": {
+        "age": 28,
+        "gender": "female",
+        "address": "123 Main St"
+    }
+});
+
+--// Insert db.profiles.insertOne({
+    "_id": 1,
+    "age": 28,
+    "gender": "female",
+    "address": "123 Main St"
+});
+
+db.users.insertOne({
+    "_id": 1,
+    "username": "alice",
+    "email": "alice@example.com",
+    "profile_id": 1
+});
+--get db.users.aggregate([
+    {
+        $lookup: {
+            from: "profiles",
+            localField: "profile_id",
+            foreignField: "_id",
+            as: "profile"
+        }
+    }]);
+-----------------------------------One-to-Many Relationship---------------------
+Embedding Example:
+db.authors.insertOne({
+    "_id": 1,
+    "name": "Jane Austen",
+    "books": [
+        { "title": "Pride and Prejudice", "year": 1813 },
+        { "title": "Sense and Sensibility", "year": 1811 }
+    ]
+});
+
+// Insert db.books.insertMany([
+    { "_id": 1, "title": "Pride and Prejudice", "year": 1813, "author_id": 1 },
+    { "_id": 2, "title": "Sense and Sensibility", "year": 1811, "author_id": 1 }
+]);
+
+db.authors.insertOne({
+    "_id": 1,
+    "name": "Jane Austen"
+});
+--Get db.authors.aggregate([
+    {
+        $lookup: {
+            from: "books",
+            localField: "_id",
+            foreignField: "author_id",
+            as: "books"
+        }
+    }
+]);
+
+------------------------------------------------Many-to-Many Relationship--------------------
+
+// Insert student documents
+db.students.insertMany([
+    { "_id": 1, "name": "Alice" },
+    { "_id": 2, "name": "Bob" }
+]);
+
+// Insert course documents
+db.courses.insertMany([
+    { "_id": 1, "title": "Math 101" },
+    { "_id": 2, "title": "History 202" }
+]);
+
+// Insert enrollment documents in the join collection
+db.enrollments.insertMany([
+    { "student_id": 1, "course_id": 1 },
+    { "student_id": 1, "course_id": 2 },
+    { "student_id": 2, "course_id": 1 }
+]);
+
+--GEt db.students.aggregate([ { $lookup: { from: "enrollments", localField: "_id", foreignField: "student_id", as: "enrollments" } }, { $lookup: { from: "courses", localField: "enrollments.course_id", foreignField: "_id", as: "course" } }, { $group: { _id: "$_id", name: { $first: "$name" }, courses: { $push: "$course" } } }] );
+

@@ -1,0 +1,22 @@
+-------------------------------------indexing--------------------------------------------
+insert-- [ { "_id": 1, "name": "Java Hut", "description": "Coffee and cakes" }, { "_id": 2, "name": "Brewed Awakenings", "description": "Freshly brewed coffee and pastries" }, { "_id": 3, "name": "The Grind House", "description": "Espresso, lattes, and sandwiches" }, { "_id": 4, "name": "Cafe Mocha", "description": "Organic coffee and vegan treats" }, { "_id": 5, "name": "Perk Up Cafe", "description": "Bagels, muffins, and specialty coffee" } ]
+
+* single index 
+db.stores.createIndex({"name":1})  
+db.stores.find({name:"Java Hut"})    
+
+-text-search
+db.stores.createIndex({"name":"text"})
+db.stores.find({$text:{$search:"Cafe"}})
+
+*db.stores.getIndexes()
+*db.stores.dropIndex("name_1"); 
+db.cafes.dropIndex("description_text");
+*db.stores.dropIndexes()
+
+* commponet Index
+ *db.stores.createIndex({name:"text",description:"text"})
+ *db.stores.find({$text:{$search:"Java Cafe"}})
+ *db.stores.find({$text:{$search:"\"Cafe Mocha\""}})
+
+*db.stores.find({ $text: { $search:"coffee" } }, { score: { $meta: "textScore" } } ).sort({ score: { $meta: "textScore" } })

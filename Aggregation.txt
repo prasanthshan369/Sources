@@ -1,0 +1,66 @@
+insert db.sales.insertMany([
+    { "_id": 1, "product": "A", "quantity": 5, "price": 10, "date": new Date("2024-01-01") },
+    { "_id": 2, "product": "B", "quantity": 10, "price": 20, "date": new Date("2024-01-01") },
+    { "_id": 3, "product": "A", "quantity": 2, "price": 10, "date": new Date("2024-01-02") },
+    { "_id": 4, "product": "B", "quantity": 1, "price": 20, "date": new Date("2024-01-02") },
+    { "_id": 5, "product": "C", "quantity": 3, "price": 30, "date": new Date("2024-01-03") }
+]);
+
+*db.sales.aggregate([ { $group: { _id: "$product"} }] );
+*db.sales.aggregate([ { $group: { _id: "$product", totalSales: { $sum: "$quantity" } } }] );
+*db.sales.aggregate([ { $group: { _id: "$product", totalSales: { $sum: { $multiply: ["$quantity", "$price"]} } } }] );
+*db.sales.aggregate([
+    {
+        $group: {
+            _id: "$date",
+            totalQuantity: { $sum: "$quantity" },
+            totalSales: { $sum: { $multiply: ["$quantity", "$price"] } }
+        }
+    }
+]);
+
+* db.sales.aggregate([ { $group: { _id: "$product", totalSales: { $sum: { $multiply: ["$quantity", "$price"] } } } }, { $sort: { totalSales: 1 } }] ); //sorting asc or desc
+
+-----------------------------------------------project-----------------------------
+--reshapes the documents to include
+db.sales.aggregate([
+    {
+        $project: {
+            product: 1,
+            date: 1,
+            totalCost: { $multiply: ["$quantity", "$price"] }
+        }
+    }
+]);
+
+------------------------------------------match-----------------------------------------
+*db.sales.aggregate([ { $match: { quantity: { $gte: 5 } } }] );
+
+------------------------------------------$limit------------------------
+*db.sales.aggregate([
+    {
+        $limit: 5
+    }
+]);
+--------------------------------------------$skip-------------------------------
+*db.sales.aggregate([
+    {
+        $skip: 2
+    }
+]);
+
+------------------------------Combining Stages in a Pipeline---------------------------
+db.sales.aggregate([
+    {
+        $group: {
+            _id: "$product",
+            totalSales: { $sum: { $multiply: ["$quantity", "$price"] } }
+        }
+    },
+    {
+        $sort: { totalSales: -1 }
+    },
+    {
+        $limit: 3
+    }
+]);
