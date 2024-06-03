@@ -1,4 +1,4 @@
--------------------------------------indexing--------------------------------------------
+zz-------------------------------------indexing--------------------------------------------
 insert-- [ { "_id": 1, "name": "Java Hut", "description": "Coffee and cakes" }, { "_id": 2, "name": "Brewed Awakenings", "description": "Freshly brewed coffee and pastries" }, { "_id": 3, "name": "The Grind House", "description": "Espresso, lattes, and sandwiches" }, { "_id": 4, "name": "Cafe Mocha", "description": "Organic coffee and vegan treats" }, { "_id": 5, "name": "Perk Up Cafe", "description": "Bagels, muffins, and specialty coffee" } ]
 
 * single index 
@@ -20,3 +20,12 @@ db.cafes.dropIndex("description_text");
  *db.stores.find({$text:{$search:"\"Cafe Mocha\""}})
 
 *db.stores.find({ $text: { $search:"coffee" } }, { score: { $meta: "textScore" } } ).sort({ score: { $meta: "textScore" } })
+
+
+*multi indexing 
+* db.skills.insertMany([ { skillsets: ["Java", "Python"] }, { skillsets: ["Java", "Android"] }] )
+* db.skills.createIndex({skillsets:1})
+*db.skills.find({skillsets:["Java","Android"]})
+---text
+*db.skills.createIndex({"skillsets":"text"})
+* db.skills.find({$text:{$search:"Java"}})
